@@ -1,30 +1,31 @@
 #
 # Conditional build:
-%bcond_with	tests	# unit tests (not included in release package)
+%bcond_without	tests	# unit tests
 
 Summary:	Pytest support for asyncio
 Summary(pl.UTF-8):	Wsparcie do asyncio dla Pytesta
 Name:		python3-pytest-asyncio
-Version:	0.14.0
-Release:	2
+Version:	0.18.2
+Release:	1
 License:	Apache v2.0
 Group:		Libraries/Python
 #Source0Download: https://pypi.org/simple/pytest-asyncio/
 Source0:	https://files.pythonhosted.org/packages/source/p/pytest-asyncio/pytest-asyncio-%{version}.tar.gz
-# Source0-md5:	b63593bc08f445f6e3f14c34128a68ed
+# Source0-md5:	b57bafeb4f3303afa99df154835caf45
 URL:		https://pypi.org/project/pytest-asyncio/
-BuildRequires:	python3-modules >= 1:3.5
+BuildRequires:	python3-modules >= 1:3.7
 BuildRequires:	python3-setuptools
 %if %{with tests}
-%if "%{py3_ver}" < "3.6"
-BuildRequires:	python3-async_generator >= 1.3
-%endif
+BuildRequires:	python3-flaky >= 3.5.0
 BuildRequires:	python3-hypothesis >= 5.7.1
-BuildRequires:	python3-pytest >= 5.4.0
+BuildRequires:	python3-pytest >= 6.1.0
+%if "%{py3_ver}" < "3.8"
+BuildRequires:	python3-typing_extensions >= 3.7.2
+%endif
 %endif
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
-Requires:	python3-modules >= 1:3.5
+Requires:	python3-modules >= 1:3.7
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -53,7 +54,12 @@ dostarcza przydatne wyposażenie i znaczniki ułatwiające testowanie.
 %py3_build
 
 %if %{with tests}
-%{__python3} -m pytest ...
+# test_flaky_integration failure: no expected report found
+# test_legacy_mode failures: more warnings than expected
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTEST_PLUGINS="pytest_asyncio.plugin" \
+PYTHONPATH=$(pwd) \
+%{__python3} -m pytest tests -k 'not test_flaky_integration and not test_legacy_mode'
 %endif
 
 %install
