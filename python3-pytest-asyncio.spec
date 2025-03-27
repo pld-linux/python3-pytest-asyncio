@@ -5,13 +5,14 @@
 Summary:	Pytest support for asyncio
 Summary(pl.UTF-8):	Wsparcie do asyncio dla Pytesta
 Name:		python3-pytest-asyncio
-Version:	0.19.0
-Release:	3
+Version:	0.26.0
+Release:	1
 License:	Apache v2.0
 Group:		Libraries/Python
 #Source0Download: https://pypi.org/simple/pytest-asyncio/
-Source0:	https://files.pythonhosted.org/packages/source/p/pytest-asyncio/pytest-asyncio-%{version}.tar.gz
-# Source0-md5:	0c74a0ae2b509735594684bf00512252
+Source0:	https://files.pythonhosted.org/packages/source/p/pytest-asyncio/pytest_asyncio-%{version}.tar.gz
+# Source0-md5:	6463f56f564ab33b34b9ab59a779f434
+Patch0:		bad-license-tag.patch
 URL:		https://pypi.org/project/pytest-asyncio/
 BuildRequires:	python3-modules >= 1:3.7
 BuildRequires:	python3-setuptools >= 1:51.0
@@ -51,7 +52,8 @@ testowanie przy użyciu zwykłych narzędzi testowych. pytest-asyncio
 dostarcza przydatne wyposażenie i znaczniki ułatwiające testowanie.
 
 %prep
-%setup -q -n pytest-asyncio-%{version}
+%setup -q -n pytest_asyncio-%{version}
+%patch -P 0 -p1
 
 # stub for setuptools
 cat >setup.py <<EOF
